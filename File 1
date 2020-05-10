@@ -1,0 +1,343 @@
+#kth non-repeating character in a string
+
+APPROACH 1: TIME: O(N)
+
+MAX_CHAR = 256
+def find_kth_norepeating_char(s,k):
+    
+    n = len(s)
+    count = [0]*MAX_CHAR
+    index = [0]*MAX_CHAR
+    
+    for i in range(MAX_CHAR):
+        count[i] = 0
+        index[i] = n
+    for i in range(0,n):
+        x = s[i]
+        count[ord(x)] += 1
+        if count[ord(x)]==1:
+            index[ord(x)] = i
+        if count[ord(x)] == 2:
+            index[ord(x)] = n
+    index.sort()
+    return s[index[k - 1]] if (index[k - 1] != n) else -1
+
+if __name__ == "__main__":
+    s = 'geekg'
+    print(find_kth_norepeating_char(s,1))
+
+APPROACH 2: DLL approach
+MAX_CHAR = 256
+
+def find_first_norepeat_char(s):
+	inDLL = [] * MAX_CHAR
+	repeated = [False] * MAX_CHAR
+	for i in range(len(s)):
+		x = s[i]
+		if repeated[ord(x)] is False:
+			inDLL.append(x)
+		else:
+			inDLL.remove(x)
+			repeated[ord(x)] = True
+	return inDLL[0]
+if __name__ == "__main__":
+    s = 'geekg'
+    print(find_first_norepeat_char(s))
+
+
+#First Unique integer in a stream of data
+def First_Unique_Int(data):
+    data_str = str(data)
+    count = [0] * 10
+    index = [len(data_str)] * 10
+    for i in range(0,len(data_str)):
+        x = data_str[i]
+        count[int(x)] += 1
+        if count[int(x)] == 1:
+            index[int(x)] = i
+        if count[int(x)] == 2:
+            index[int(x)] = len(data_str)
+    index.sort()
+    if index[0] != len(data_str):
+        return data_str[index[0]]
+    else:
+        return -1
+    
+data = 110023
+print(First_Unique_Int(data))
+
+
+
+
+#Populating Next Right Pointers in Each Node - Perfect Binary Tree
+
+class Node:
+	def __init__(self,val:int=0,left:'Node'=None,right:'Node'=None,next:'Node'=None):
+		self.val = val
+		self.left = left
+		self.right = right
+		self.next = next
+
+	def connect(self,root:'Node') -> 'Node':
+		if not root:
+			return root
+   		if root.left:
+   			root.left.next = root.right
+   			if root.next:
+   				root.right.next = root.next.left
+   		return root
+
+#Given two arrays containing numbers, find the difference of closest greatest of each number from left and right ?
+3 2 1 7 5
+0 3 2 0 7 => from left (here for number 1 since 2 and 3 are both greater, we pick the closest viz. 2)
+7 7 7 0 0 => from right
+7 4 5 0 7 => difference
+
+#Course schedule : Topological sort
+
+#Top view of a binary tree:  VERTICAL ORDER TRAVERSAL
+class Node:
+    def __init__(self,key):
+        self.val = key
+        self.left = None
+        self.right = None
+        self.hd = 0             #horizontal distance of a node
+        
+def topview(root):
+    if not root:
+        return root
+    q = []
+    m = {}
+    hd = 0
+    root.hd = hd
+    q.append(root)
+    while(len(q)):
+        root = q[0]
+        hd = root.hd
+        if hd not in m:
+            m[hd] = root.val
+        if root.left:
+            root.left.hd = hd - 1
+            q.append(root.left)
+        if root.right:
+            root.right.hd = hd + 1
+            q.append(root.right)
+        q.pop(0)
+    for key in m.keys():
+        print(m[key])
+        
+if __name__ == '__main__':
+    root = Node(1)
+    root.left = Node(2)
+    root.right = Node(3)
+    root.left.right = Node(4)  
+    root.left.right.right = Node(5)  
+    root.left.right.right.right = Node(6)  
+    topview(root)
+
+
+#To check balanced paranthesis
+
+open_list = ['[','{','(']
+close_list = [']','}',')']
+
+def check_paranthesis(s):
+    stack = []
+    for i in s:
+        if i in open_list:
+            stack.append(i)
+        elif i in close_list:
+            pos = close_list.index(i)
+            if(len(stack)>0) and open_list[pos]==stack[len(stack)-1]:
+                stack.pop()
+            else:
+                return 'Unbalanced'
+    if len(stack) == 0:
+        return 'Balanced'
+    else:
+        return 'Unbalanced'
+    
+s = '[{}]'
+print(check_paranthesis(s))
+
+
+#Given a string return a reduced string such that , the reduced string has the characters re-arranged
+
+1. in order of characters having highest frequencey
+2. followed by character which appears just once in the same order as in the original string
+3. no duplicate characters
+
+s = 'Hello World'
+
+d ={}
+for item in s:
+	if item not in d:
+		d[item] = 1
+	else:
+		d[item] += 1
+for item in sorted(d.items(),reverse=True,key=lambda k:k[1]):
+	print(item[0],end="")
+
+#Three sum : find all triplets that sum upto zero
+
+nums = [-1,0,1,2,-1,-4]
+nums.sort()
+triplets = set()
+num_len = len(nums)
+left,right = 0,0
+for i in range(num_len-2):
+    left = i + 1
+    right = num_len - 1
+    while left < right:
+        curr_sum = nums[i] + nums[left] + nums[right]
+        if curr_sum == 0:
+            triplets.add(tuple(sorted([nums[i],nums[left],nums[right]])))
+            left += 1
+            right -= 1
+        elif curr_sum > 0:
+            right -= 1
+        elif curr_sum < 0:
+            left += 1
+for x in triplets:
+    print([x[0],x[1],x[2]])
+
+#to find out if two dates fall within a month range
+
+from datetime import datetime
+dt1 = '2/14/2018'
+dt2 = '3/30/2018'
+x = datetime.strptime(dt1,"%m/%d/%Y")
+y = datetime.strptime(dt2,"%m/%d/%Y")
+d = abs(x-y)
+num_days = d.days
+if num_days <= 30:
+    print(True)
+else:
+    print(False)
+
+
+#absolute path to canonical path
+def simplifyPath(self, path: str) -> str:
+        s = []
+        path = path.split('/')
+        for i in path:
+            if(i == ''):
+                continue
+            elif(i == '.'):
+                continue
+            elif(i == '..'):
+                if(len(s)):
+                    s.pop()
+            else:
+                s.append('/'+i)
+        if(len(s) == 0):
+            s.append('/')
+        return "".join(i for i in s) 
+
+#Dictionary range query:
+Input: dict = [apple, boy, cat, dog, element, zack, zill]
+Output:
+range("a", "z"); // returns  [apple, boy, cat, dog, element, zack, zill]
+range("ebc", "zas"); // returns [element, zack]
+
+#Code begins: O(Wlogn, W->average word length)
+import bisect
+
+class RangeDictionary(object):
+
+	def __init__(self, dic):
+		self.wordDictionary = sorted(dic)
+
+	def add_word_to_dictionary(self, word):
+		bisect.insort(self.wordDictionary, word)
+
+	def get_words_in_range(self, start, end):
+		startInd = bisect.bisect(self.wordDictionary, start)
+		endInd = bisect.bisect(self.wordDictionary, end)
+
+		return self.wordDictionary[startInd:endInd]
+
+#Encoding and decoding of an URL (COMPRESSION OF STRINGS)
+import random
+import string
+
+class Codec:
+    store_dict = {}
+    def random_choice(self):
+        s = string.ascii_letters + string.digits
+        return "".join(random.choice(s) for _ in range(6))
+    def encode(self,longURL):
+        uniqueID = self.random_choice()
+        shortURL = "https://shortURL.com/"+uniqueID
+        self.store_dict[shortURL] = longURL
+        return shortURL
+    def decode(self,shortURL):
+        return self.store_dict[shortURL]
+    
+    
+C = Codec()
+print(C.decode(C.encode("https://animalogilacomichi.com/")))
+
+'''
+Input: "WWWWWWWWWBBBBBBB"
+Output: "9W7B"
+'''
+
+class Codec:
+    store = {}
+    def encode(self,input_str):
+        res = ''
+        for i in input_str:
+            if i not in self.store:
+                self.store[i] = 1
+            else:
+                self.store[i] += 1
+        for k,v in self.store.items():
+            res += str(v)+k
+        return res
+    def decode(self,en_str):
+        final = ''
+        for key,val in self.store.items():
+            i = val
+            while(i>0):
+                final += key
+                i -= 1
+        return final
+    
+    
+    
+C = Codec()
+i = "WWWWWWWWWBBBBBBB"
+print(C.decode(C.encode(i)))
+
+
+#Given a string with lowercase, uppercase and numbers, rearrange it so that uppercase letters are first, then lowercase and then numbers. It should maintain the original order
+#Input- "cdBnC52c" output - "BCcdnc52"
+#Rearrange it in o(n) in one pass without using extra space.
+
+def formatter(instr):
+    upper = ""
+    lower = ""
+    digit = ""
+    if instr == '':
+        return ''
+    for s in instr:
+        if s.isalpha():
+            if s.isupper():
+                upper += s
+            else:
+                lower += s
+        else:
+            digit += s
+    return upper+lower+digit
+
+print(formatter("dhgab34DjSS3"))
+
+
+
+    
+
+
+
+
+
