@@ -1,0 +1,324 @@
+#Creation of a linked list in python
+
+class Node:
+    def __init__(self,data=None):
+        self.data = data
+        self.next = None
+class LinkedList:
+    def __init__(self):
+        self.head = None
+    def printlist(self):
+        headnode = self.head
+        while headnode is not None:
+            print(headnode.data)
+            headnode = headnode.next
+    def lenlist(self):
+        length = 0
+        temp = self.head
+        while temp is not None:
+            length += 1
+            temp = temp.next
+        return length
+    #beginning of the list
+    def insertnodestart(self,newdata):
+        newnode = Node(newdata)
+        newnode.next = self.head
+        self.head = newnode
+    #end of the list
+    def insertnodeend(self,newdata):
+        newnode = Node(newdata)
+        temp = self.head
+        if self.head is None:
+            self.head = newnode
+            return
+        while temp.next is not None:
+            temp = temp.next
+        temp.next = newnode
+        newnode.next = None
+    #in between two nodes
+    def insertnode(self,position,newdata):
+        newnode = Node(newdata)
+        temp = self.head
+        length=self.lenlist()
+        if position == 0:
+            self.head = newnode
+            newnode.next = temp
+            return
+        if length == position:
+            self.insertnodeend(newdata)
+            return
+        if length < position:
+            print('Cannot append the node as position exceeds length of list')
+            return
+        pos = 1
+        while pos!=position:
+            temp =temp.next
+            pos += 1
+        newnode.next = temp.next
+        temp.next = newnode
+    #remove a node from a list based on position
+    def deletenode(self,position):
+        length = self.lenlist()
+        if position == 0 or position > length:
+            print('Node does not exist at position '+ str(position) +' ,cannot delete node')
+            return
+        else:
+            temp = self.head
+            if position == 1:   #first node to be deleted
+                self.head = temp.next
+                temp.next = None
+                return
+            else:
+                pos = 1
+                while pos < position-1:
+                    temp = temp.next
+                    pos += 1
+                deltemp = temp.next
+                temp.next = deltemp.next
+                deltemp.next = None
+    #remove a given node
+    def delgivennode(self,nodedata):
+        if nodedata is None:
+            print('No node found to delete')
+            return
+        else:
+            temp = self.head
+            flag = 0
+            while temp is not None:
+                if temp.data != nodedata:
+                    temp = temp.next
+                    flag = 1
+                else:
+                    flag = 0
+                    break
+            if flag == 1:
+                print('Given node to be deleted is '+nodedata+' :No such node exists')
+                return flag
+            else:
+                temp = self.head
+                if temp.data == nodedata:
+                    self.head = temp.next
+                    temp.next = None
+                    return
+                else:
+                    pos = 1
+                    while temp is not None:
+                        if temp.next.data == nodedata:
+                            break
+                        temp = temp.next
+                    delnode = temp.next
+                    temp.next = delnode.next
+                    delnode.next = None
+                    return flag
+
+list1 = LinkedList()
+list2 = LinkedList()
+list1.head = Node('monday')
+
+node2 = Node('tuesday')
+node3 = Node('wednesday')
+
+list1.head.next = node2
+node2.next = node3
+
+list1.insertnodeend('thursday')
+list1.insertnode(2,'friday')
+print('Before deletion')
+list1.printlist()
+flag = list1.delgivennode('friday')
+if flag == 0:
+    print('\nAfter deletion')
+    list1.printlist()
+
+#print('The length of the linked list is: '+str(list1.lenlist()))
+--------------------------------------------------------------------------------
+#creation of binary tree in python
+
+class Node:
+    def __init__(self,data):
+        self.left = None
+        self.right = None
+        self.data = data
+
+    #inserting data into the tree
+    def insertnode(self,data):
+        if self.data is not None:
+            if data < self.data:
+                if self.left is None:
+                    self.left = Node(data)
+                else:
+                    self.left.insertnode(data)
+            elif data > self.data:
+                if self.right is None:
+                    self.right = Node(data)
+                else:
+                    self.right.insertnode(data)
+        else:
+            self.data = data
+
+    def printtree(self):
+        if self.left is not None:
+            self.left.printtree()
+        print(self.data)
+        if self.right is not None:
+            self.right.printtree()
+
+    #inorder traversal of tree
+    # Left-->Root-->Right
+    def inordertraversal(self,root):
+        result = []
+        if root is not None:
+            result = self.inordertraversal(root.left)
+            result.append(root.data)
+            result = result + self.inordertraversal(root.right)
+        return result
+
+    #preorder traversal of tree
+    #Root-->Left-->Right
+    def preordertraversal(self,root):
+        result = []
+        if root is not None:
+            result.append(root.data)
+            result = result + self.preordertraversal(root.left)
+            result = result + self.preordertraversal(root.right)
+        return result
+
+    #postorder traversal of tree
+    #Left-->Right-->Root
+    def postordertraversal(self,root):
+        result = []
+        if root is not None:
+            result = self.preordertraversal(root.left)
+            result = result + self.preordertraversal(root.right)
+            result.append(root.data)
+        return result
+    #binary search
+    def bst(self,key):
+        if key < self.data:
+            if self.left is None:
+                print('Not found')
+            else:
+                return self.left.bst(key)
+        elif key > self.data:
+            if self.right is None:
+                print('Not found')
+            else:
+                return self.right.bst(key)
+        else:
+            print(str(key)+' is found')
+
+root = Node(10)
+root.insertnode(5)
+root.insertnode(2)
+root.insertnode(15)
+root.insertnode(20)
+root.printtree()
+print('\nInorder traversal of the tree')
+print(root.inordertraversal(root))
+print('\nPreorder traversal of the tree')
+print(root.preordertraversal(root))
+print('\nPostorder traversal of the tree')
+print(root.postordertraversal(root))
+print('\nBinary Search Tree')
+print(root.bst(4))
+--------------------------------------------------------------------------------
+#implementation of stack and queue from dequeue of Python collections
+
+import collections
+
+#stack
+
+stack = collections.deque([])
+stack.append(1)
+stack.append(2)
+stack.append(3)
+print('Before pop')
+print(stack)
+stack.pop()
+print('After pop')
+print(stack)
+
+#queue
+queue = collections.deque([])
+queue.append(1)
+queue.append(2)
+queue.append(3)
+print('Before dequeue')
+print(queue)
+queue.popleft()
+print('After dequeue')
+print(queue)
+--------------------------------------------------------------------------------
+Intersection of 2 arrays:
+
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+            dict1, dict2 = {},{}
+            res = {}
+            result = []
+            count = 0
+            for i in range(0, len(nums1)):
+                if nums1[i] not in dict1:
+                    dict1[nums1[i]] = count + 1
+                    count = 0
+                else:
+                    dict1[nums1[i]] += 1
+            for j in range(0, len(nums2)):
+                if nums2[j] not in dict2:
+                    dict2[nums2[j]] = count + 1
+                    count = 0
+                else:
+                    dict2[nums2[j]] += 1
+            if len(dict1) >= len(dict2):
+                for key1 in dict1.keys():
+                    for key2 in dict2.keys():
+                        if key1 == key2:
+                            if dict1[key1] <= dict2[key2]:
+                                res[key1] = dict1[key1]
+                            else:
+                                res[key1] = dict2[key1]
+
+            else:
+                for key2 in dict2.keys():
+                    for key1 in dict1.keys():
+                        if key1 == key2:
+                            if dict1[key1] <= dict2[key2]:
+                                res[key1] = dict1[key1]
+                            else:
+                                res[key1] = dict2[key1]
+            for key in res.keys():
+                for i in range(res[key]):
+                    result.append(key)
+
+            return result
+ O(n^2)
+ -------------------------------------------------------------------------------
+#rotate a 2D matrix
+ class Solution:
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        def transpose(matrix):
+            for i in range(len(matrix)):
+                for j in range(i,len(matrix[0])):
+                    matrix[i][j],matrix[j][i] = matrix[j][i],matrix[i][j]
+
+        def rotate_matrix(matrix):
+            for j in range(len(matrix[0])//2):
+                for i in range(len(matrix)):
+                    matrix[i][j], matrix[i][-(j+1)] = matrix[i][-(j+1)], matrix[i][j]
+
+        transpose(matrix)
+        rotate_matrix(matrix)
+--------------------------------------------------------------------------------
+def reverseList(self, head: ListNode) -> ListNode:
+
+        prev:ListNode = None #created an Empty Node
+        curr = head # The Head Node is now current(curr) node
+        while curr!= None: #Iterate until the Node is None
+            nexttemp: ListNode = curr.next #created a temp Node to remember the next Node
+            curr.next = prev # assigning the next Node of current as Prev (for first iteration it will be None)
+            prev = curr # Now the prev become current
+            curr = nexttemp # current become the node which we stored in the temp Node(nexttemp)
+        return prev
