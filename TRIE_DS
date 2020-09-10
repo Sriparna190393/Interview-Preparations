@@ -1,0 +1,299 @@
+#TRIE datastructure - IMPLEMENTING AUTOSEARCH
+class TrieNode:
+    def __init__(self,letter):
+        self.letter = letter
+        self.children = {}
+        self.is_end_of_word = False
+class Trie:
+    def __init__(self):
+        self.root = TrieNode("*")
+        self.word_list = []
+        
+    def add_word(self,word):
+        curr_node = self.root
+        for letter in word:
+            if letter not in curr_node.children:
+                curr_node.children[letter] = TrieNode(letter)
+            curr_node = curr_node.children[letter]
+        curr_node.is_end_of_word = True
+        
+    def does_word_exist(self,word):
+        curr_node = self.root
+        if word == "":
+            return True
+        for letter in word:
+            if letter not in curr_node.children:
+                return False
+            curr_node = curr_node.children[letter]
+        return curr_node.is_end_of_word
+    
+    def dfs_search(self,node,word):
+        if node.is_end_of_word:
+            self.word_list.append(word)
+        for key,val in node.children.items():
+            self.dfs_search(val,word+key)
+        
+    def search_with_prefix(self,prefix):
+        curr_node = self.root
+        flag_notfound = False
+        temp = ''
+        for letter in prefix:
+            if letter not in curr_node.children:
+                flag_notfound = True
+                break
+            temp += letter
+            curr_node = curr_node.children[letter]
+        if flag_notfound:
+            return 0
+        elif not curr_node.children and curr_node.is_end_of_word:
+            return -1
+        self.dfs_search(curr_node,temp)
+        return self.word_list
+                    
+T = Trie()
+words = ["wait","waits","shop","shopper"]
+for word in words:
+    T.add_word(word)
+wordcheck = ["wait","waiting","shopping","shop","sho"]
+for word in wordcheck:
+    print(T.does_word_exist(word))
+print(T.search_with_prefix('wa'))
+    
+========================================================================================================================================================
+#TRIE datastructure - IMPLEMENTING TELEPHONE DIRECTORY. - need to update
+class TrieNode:
+    def __init__(self,letter):
+        self.letter = letter
+        self.children = {}
+        self.is_end_of_rec = False
+class Trie:
+    def __init__(self):
+        self.root = TrieNode("*")
+        self.record_list = []
+        
+    def add_word(self,firstname,lastname,phone_number):
+        word = ''
+        curr_node = self.root
+        full_name = lastname+firstname
+        for letter in full_name:
+            if letter not in curr_node.children:
+                curr_node.children[letter] = TrieNode(letter)
+            curr_node = curr_node.children[letter]
+        for num in phone_number:
+            curr_node.children[num] = TrieNode(num)
+            curr_node = curr_node.children[num]
+        curr_node.is_end_of_rec = True
+    
+    def does_word_exist(self,word):
+        curr_node = self.root
+        if word == "":
+            return True
+        for letter in word:
+            if letter not in curr_node.children:
+                return False
+            curr_node = curr_node.children[letter]
+        return curr_node.is_end_of_rec
+    
+    def dfs_search(self,node,word):
+        if node.is_end_of_rec:
+            self.record_list.append(word)
+        for key,val in node.children.items():
+            self.dfs_search(val,word+key)
+        
+    def search_with_prefix(self,firstname,lastname):
+        curr_node = self.root
+        flag_notfound = False
+        temp = ''
+        if firstname == '':
+            for letter in lastname:
+                if letter not in curr_node.children:
+                    flag_notfound = True
+                    break
+                temp += letter
+                curr_node = curr_node.children[letter]
+            if flag_notfound:
+                return 0
+            elif not curr_node.children and curr_node.is_end_of_rec:
+                return -1
+            self.dfs_search(curr_node,temp)
+            return self.record_list
+        
+T = Trie()
+T.add_word("John","Smith","7165632674")
+T.add_word("Alex","Smith","7165632676")
+print(T.does_word_exist("JohnSmith7165632674"))
+print(T.search_with_prefix('','Smith'))
+
+==========================================================================================================================================================================
+#LEVEL ORDER TREE TRAVERSAL (BFS), REVERSE LEVEL ORDER TRAVERSAL AND INORDER TRAVERSAL:
+
+class Stack(object):
+    def __init__(self):
+        self.items = []
+    def push(self,item):
+        self.items.append(item)
+    def pop_item(self):
+        if not self.is_empty():
+            return self.items.pop()
+    def is_empty(self):
+        if len(self.items) == 0:
+            return True
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1]
+    def __len__(self):
+        return self.size()
+    def size(self):
+        return len(self.items)
+
+class Queue(object):
+    def __init__(self):
+        self.items = []
+    def enqueue(self,item):
+        self.items.insert(0,item)
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.pop()
+    def is_empty(self):
+        if len(self.items) == 0:
+            return True
+    def peek(self):
+        if not self.is_empty():
+            return self.items[-1].val
+    def __len__(self):
+        return self.size()
+    def size(self):
+        return len(self.items)
+
+class Node(object):
+    def __init__(self,val):
+        self.val = val
+        self.left = None
+        self.right = None
+class BinaryTree(object):
+    def __init__(self,root):
+        self.root = Node(root)
+        
+    def levelorder_print(self,start):
+        if start is None:
+            return 
+        Q = Queue()
+        Q.enqueue(start)
+        path = ""
+        while len(Q) > 0:
+            path += str(Q.peek()) + "-"
+            temp = Q.dequeue()
+            if temp.left:
+                Q.enqueue(temp.left)
+            if temp.right:
+                Q.enqueue(temp.right)
+        return path
+    def inorder(self,start,path):
+        if start:
+            path = self.inorder(start.left,path)
+            path += (str(start.val) + "-")
+            path = self.inorder(start.right,path)
+        return path
+    
+    def reverse_order_traversal(self,start):
+        Q = Queue()
+        S = Stack()
+        path = ""
+        Q.enqueue(start)
+        if start is None:
+            return
+        while len(Q) > 0:
+            temp = Q.dequeue()
+            S.push(temp)
+            if temp.right:
+                Q.enqueue(temp.right)
+            if temp.left:
+                Q.enqueue(temp.left)
+        while len(S) > 0:
+            node = S.pop_item()
+            path += str(node.val) + "-"
+        return path
+    
+BT = BinaryTree(1)
+BT.root.left = Node(2)
+BT.root.right = Node(3)
+BT.root.left.left = Node(4)
+BT.root.left.right = Node(5)
+print(BT.levelorder_print(BT.root))
+print(BT.inorder(BT.root,""))
+print(BT.reverse_order_traversal(BT.root))
+
+======================================================================================================================================================
+def zigzag_traversal(self,start):
+        S1 = Stack()
+        S2 = Stack()
+        temp_res, result = [],[]
+        S1.push(start)
+        while(S1 or S2):
+            while len(S1) > 0:
+                curr_node = S1.pop_item()
+                temp_res.append(curr_node.val)
+                if curr_node.left:
+                    S2.push(curr_node.left)
+                if curr_node.right:
+                    S2.push(curr_node.right)
+                if len(S1)==0:
+                    result.append(temp_res)
+                    temp_res = []
+            while len(S2) > 0:
+                curr_node = S2.pop_item()
+                temp_res.append(curr_node.val)
+                if curr_node.right:
+                    S1.push(curr_node.right)
+                if curr_node.left:
+                    S1.push(curr_node.left)
+                if len(S2)==0:
+                    result.append(temp_res)
+                    temp_res = []
+        path = ""
+        for item in result:
+            for i in item:
+                path += str(i)+"-"
+        return path
+======================================================================================================================================================
+def vertical_traversal(self,start):
+        Q = Queue()
+        temp_dict = {}
+        hash_table = {}
+        Q.enqueue(start)
+        temp_dict[start.val] = 0
+        while len(Q) > 0:
+            temp = []
+            curr_node = Q.dequeue()
+            if curr_node:
+                level = temp_dict[curr_node.val]
+                if level not in hash_table:
+                    temp.append(curr_node.val)
+                    hash_table[level] = temp
+                else:
+                    hash_table[level].append(curr_node.val)
+                if curr_node.left:
+                    left = curr_node.left
+                    Q.enqueue(left)
+                    temp_dict[left.val] = level - 1
+                if curr_node.right:
+                    right = curr_node.right
+                    Q.enqueue(right)
+                    temp_dict[right.val] = level + 1
+        hash_table = sorted(hash_table.items(),key = lambda k:(k[0],))
+        #print(hash_table)
+        path = ""
+        for item in hash_table:
+            t = item[1]
+            for i in t:
+                path += str(i) + "-"
+        return path
+
+#To print the top view: Only print the first value of each key in the hash
+
+for item in hash_table:
+            t = item[1]
+            path += str(t[0]) + "-"
+        return path
+
+======================================================================================================================================================
